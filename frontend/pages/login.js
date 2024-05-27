@@ -14,6 +14,7 @@ const LoginPage = () => {
     try {
       const data = await login({ email, password });
       localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user)); // Store user information including the role
       router.push('/');
       setTimeout(() => {
         window.location.reload();
@@ -22,8 +23,6 @@ const LoginPage = () => {
       console.error(error);
     }
   };
-  
-  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-50">
