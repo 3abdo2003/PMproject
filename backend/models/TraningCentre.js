@@ -1,4 +1,3 @@
-// models/TrainingCentre.js
 const mongoose = require('mongoose');
 
 const trainCentreSchema = new mongoose.Schema({
@@ -8,6 +7,20 @@ const trainCentreSchema = new mongoose.Schema({
   },
   location: {
     type: String,
+    required: true,
+  },
+  date: {
+    type: Date,
+  },
+  time: {
+    type: String,
+    validate: {
+      validator: function(v) {
+        // Regular expression to match time in format HH:MM AM/PM
+        return /^(0?[1-9]|1[0-2]):([0-5]\d) (AM|PM)$/i.test(v);
+      },
+      message: props => `${props.value} is not a valid time format. Please use HH:MM AM/PM format.`,
+    },
     required: true,
   },
   capacity: {

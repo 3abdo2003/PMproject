@@ -13,6 +13,8 @@ const AdminPage = () => {
     capacity: '',
     availableSeats: '',
     contactInfo: '',
+    date: '',
+    time: '',
   });
   const [selectedCenterId, setSelectedCenterId] = useState('');
 
@@ -35,7 +37,7 @@ const AdminPage = () => {
       const data = await getAllTrainCenters();
       setTrainCenters(data.trainCentres);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching training centers:', error);
     }
   };
 
@@ -46,27 +48,44 @@ const AdminPage = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await createTrainCenter(formData);
+      // Format time to HH:MM AM/PM format
+      const formattedTime = formData.time ? formatTime(formData.time) : '';
+      // Update formData with formatted time
+      const updatedFormData = { ...formData, time: formattedTime };
+      // Send updated form data to createTrainCenter function
+      await createTrainCenter(updatedFormData);
       alert('Training center created successfully');
-      setFormData({ name: '', location: '', capacity: '', availableSeats: '', contactInfo: '' });
+      setFormData({ name: '', location: '', capacity: '', availableSeats: '', contactInfo: '', date: '', time: '' });
       fetchTrainCenters();
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || 'Failed to create training center');
     }
   };
-
+  
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await updateTrainCenter(selectedCenterId, formData);
+      // Format time to HH:MM AM/PM format
+      const formattedTime = formData.time ? formatTime(formData.time) : '';
+      // Update formData with formatted time
+      const updatedFormData = { ...formData, time: formattedTime };
+      // Send updated form data to updateTrainCenter function
+      await updateTrainCenter(selectedCenterId, updatedFormData);
       alert('Training center updated successfully');
-      setFormData({ name: '', location: '', capacity: '', availableSeats: '', contactInfo: '' });
+      setFormData({ name: '', location: '', capacity: '', availableSeats: '', contactInfo: '', date: '', time: '' });
       setSelectedCenterId('');
       fetchTrainCenters();
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || 'Failed to update training center');
     }
   };
+  
+  // Function to format time to HH:MM AM/PM format
+  const formatTime = (time) => {
+    const date = new Date(`01/01/2020 ${time}`);
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+  };
+  
 
   const handleDelete = async (e) => {
     e.preventDefault();
@@ -76,7 +95,7 @@ const AdminPage = () => {
       setSelectedCenterId('');
       fetchTrainCenters();
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || 'Failed to delete training center');
     }
   };
 
@@ -91,6 +110,8 @@ const AdminPage = () => {
         capacity: selectedCenter.capacity,
         availableSeats: selectedCenter.availableSeats,
         contactInfo: selectedCenter.contactInfo,
+        date: selectedCenter.date || '',
+        time: selectedCenter.time || '',
       });
     }
   };
@@ -143,8 +164,24 @@ const AdminPage = () => {
             value={formData.contactInfo}
             onChange={handleChange}
             placeholder="Contact Info"
-            className="w-full p-2 mb-4 border rounded"
+            className="w-full p-2 mb-2 border rounded"
             required
+          />
+          <input
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            placeholder="Date"
+            className="w-full p-2 mb-2 border rounded"
+          />
+          <input
+            type="time"
+            name="time"
+            value={formData.time}
+            onChange={handleChange}
+            placeholder="Time"
+            className="w-full p-2 mb-4 border rounded"
           />
           <button
             type="submit"
@@ -211,8 +248,24 @@ const AdminPage = () => {
             value={formData.contactInfo}
             onChange={handleChange}
             placeholder="Contact Info"
-            className="w-full p-2 mb-4 border rounded"
+            className="w-full p-2 mb-2 border rounded"
             required
+          />
+          <input
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            placeholder="Date"
+            className="w-full p-2 mb-2 border rounded"
+          />
+          <input
+            type="time"
+            name="time"
+            value={formData.time}
+            onChange={handleChange}
+            placeholder="Time"
+            className="w-full p-2 mb-4 border rounded"
           />
           <button
             type="submit"

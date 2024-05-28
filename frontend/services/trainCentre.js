@@ -1,4 +1,3 @@
-// services/trainCenter.js
 import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -54,5 +53,14 @@ export const deleteTrainCenter = async (id) => {
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to delete train center');
+  }
+};
+
+export const getTrainCentreById = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL}/train-centre/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
   }
 };

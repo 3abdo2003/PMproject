@@ -1,5 +1,6 @@
-// pages/trainingCenters.js
-import { useState, useEffect } from 'react';
+// Import necessary libraries
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { getAllTrainCenters } from '../services/trainCentre';
 import { FaUserAlt, FaChair, FaPhone } from 'react-icons/fa';
 import { MdLocationOn } from 'react-icons/md';
@@ -7,7 +8,9 @@ import { MdLocationOn } from 'react-icons/md';
 const TrainingCenters = () => {
   const [trainCenters, setTrainCenters] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
 
+  // Fetch train centers on component mount
   useEffect(() => {
     const fetchTrainCenters = async () => {
       try {
@@ -21,9 +24,15 @@ const TrainingCenters = () => {
     fetchTrainCenters();
   }, []);
 
+  // Filter train centers based on search term
   const filteredTrainCenters = trainCenters.filter(trainCenter =>
     trainCenter.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Handle book now button click
+  const handleBookNow = (trainCenterId) => {
+    router.push(`/book/${trainCenterId}`);
+  };
 
   return (
     <main className="container mx-auto px-4 py-8 sm:px-6 lg:px-8 bg-white">
@@ -48,6 +57,10 @@ const TrainingCenters = () => {
                 <MdLocationOn className="mr-2 text-blue-500" />
                 <p>{trainCenter.location}</p>
               </div>
+              <div className="flex items-center text-gray-500">
+                {/* Display date and time */}
+                <p>{new Date(trainCenter.date).toLocaleDateString()}, {trainCenter.time}</p>
+              </div>
             </div>
             <div className="mt-4 space-y-2">
               <div className="flex items-center justify-between">
@@ -70,7 +83,10 @@ const TrainingCenters = () => {
               </div>
             </div>
             <div className="mt-6 flex items-center">
-              <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-blue-300 bg-blue-500 text-white hover:bg-blue-600 h-10 px-4 py-2">
+              <button
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-blue-300 bg-blue-500 text-white hover:bg-blue-600 h-10 px-4 py-2"
+                onClick={() => handleBookNow(trainCenter._id)}
+              >
                 Book Now
               </button>
             </div>
