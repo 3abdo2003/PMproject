@@ -1,12 +1,12 @@
 // server.js
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const userRoutes = require('./routes/userRoutes'); // Corrected route name
+const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/auth');
 const trainCentreRoute = require('./routes/trainRoutes');
+const bookingRoutes = require('./routes/bookingRoutes'); // Add booking routes
 
 dotenv.config();
 
@@ -23,6 +23,7 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/train-centre', trainCentreRoute);
+app.use('/api/bookings', bookingRoutes); 
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

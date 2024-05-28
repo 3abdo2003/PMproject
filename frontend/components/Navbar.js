@@ -22,27 +22,36 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-600 p-4 shadow-md">
-      <div className="container mx-auto flex justify-between items-center">
-        <div>
-          <Link href="/" legacyBehavior>
-            <a className={`text-lg font-semibold ${router.pathname === '/' ? 'text-white' : 'text-blue-200'} hover:text-white`}>
-              Home
-            </a>
-          </Link>
-          <Link href="/training-centers" legacyBehavior>
-            <a className={`ml-4 text-lg font-semibold ${router.pathname === '/training-centers' ? 'text-white' : 'text-blue-200'} hover:text-white`}>
-              Training Centers
-            </a>
-          </Link>
-        </div>
-        <div>
-          <button onClick={handleProfileClick} className="text-lg font-semibold text-blue-200 hover:text-white">
-            {isLoggedIn ? 'Profile' : 'Login'}
-          </button>
-        </div>
-      </div>
-    </nav>
+    <header className="flex items-center justify-between h-16 px-4 bg-blue-900 text-white">
+      <a className="flex items-center gap-2 font-bold" href="#">
+        <span>Exam Booking</span>
+      </a>
+      <nav className="flex items-center gap-4">
+        <Link href="/" legacyBehavior>
+          <a
+            className={`px-2 py-1 rounded-md hover:bg-blue-800 focus:bg-blue-800 ${router.pathname === '/' ? 'bg-blue-800' : ''}`}
+            data-active="/"
+          >
+            Home
+          </a>
+        </Link>
+        <Link href="/training-centers" legacyBehavior>
+          <a
+            className={`px-2 py-1 rounded-md hover:bg-blue-800 focus:bg-blue-800 ${router.pathname === '/training-centers' ? 'bg-blue-800' : ''}`}
+            data-active="/training-centers"
+          >
+            Training Centers
+          </a>
+        </Link>
+        <button
+          onClick={handleProfileClick}
+          className={`px-2 py-1 rounded-md hover:bg-blue-800 focus:bg-blue-800 ${router.pathname === '/profile' ? 'bg-blue-800' : ''}`}
+          data-active="/profile"
+        >
+          {isLoggedIn ? 'Profile' : 'Login'}
+        </button>
+      </nav>
+    </header>
   );
 };
 
