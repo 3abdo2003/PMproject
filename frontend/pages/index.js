@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getAllTrainCenters } from '../services/trainCentre';
+import { FaUserAlt, FaChair, FaPhone } from 'react-icons/fa';
+import { MdLocationOn } from 'react-icons/md';
 
 export default function HomePage() {
   const [trainCenters, setTrainCenters] = useState([]);
@@ -86,11 +88,39 @@ export default function HomePage() {
             </div>
             <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12">
               {trainCenters.map(center => (
-                <div key={center._id} className="rounded-lg border bg-white text-gray-900 shadow-sm p-6 hover:shadow-xl transition-shadow">
-                  <h3 className="text-2xl font-semibold leading-none tracking-tight">{center.name}</h3>
-                  <p className="text-gray-700">Location: {center.location}</p>
-                  <p className="text-gray-700">Capacity: {center.capacity}</p>
-                  <p className="text-gray-700">Contact: {center.contactInfo}</p>
+                <div key={center._id} className="rounded-lg bg-white p-6 shadow-sm border border-gray-200">
+                  <div className="flex flex-col space-y-1.5">
+                    <h2 className="text-xl font-bold text-gray-800">{center.name}</h2>
+                    <div className="flex items-center text-gray-500">
+                      <MdLocationOn className="mr-2 text-blue-500" />
+                      <p>{center.location}</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-gray-500">
+                        <FaUserAlt className="mr-2 text-blue-500" />
+                        <p>Capacity: {center.capacity}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-gray-500">
+                        <FaChair className="mr-2 text-blue-500" />
+                        <p>Available Seats: {center.availableSeats}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-gray-500">
+                        <FaPhone className="mr-2 text-blue-500" />
+                        <p>Contact: {center.contactInfo}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-6 flex items-center">
+                    <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-blue-300 bg-blue-500 text-white hover:bg-blue-600 h-10 px-4 py-2">
+                      Book Now
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -149,4 +179,3 @@ export default function HomePage() {
     </div>
   );
 }
-
