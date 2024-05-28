@@ -1,43 +1,42 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { createTrainCenter, updateTrainCenter, deleteTrainCenter, getAllTrainCenters } from '../services/trainCentre';
+import axios from 'axios';
 
 const ProfilePage = () => {
   const router = useRouter();
+  const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [trainCenters, setTrainCenters] = useState([]);
-  const [formData, setFormData] = useState({
-    name: '',
-    location: '',
-    capacity: '',
-    contactInfo: '',
-  });
-  const [selectedCenterId, setSelectedCenterId] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
-    } else {
-      // Assuming user information is stored in local storage
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (user && user.role === 'admin') {
-        setIsAdmin(true);
-        fetchTrainCenters();
-      }
-    }
-  }, [router]);
+    const fetchUserProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          router.push('/login');
+          return;
+        }
+        
+        const response = await axios.get('http://localhost:5000/api/users/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        setUser(response.data.user);
 
-  const fetchTrainCenters = async () => {
-    try {
-      const data = await getAllTrainCenters();
-      setTrainCenters(data.trainCentres); // Adjust according to the response structure
-    } catch (error) {
-      console.error(error);
-    }
-  };
+        if (response.data.user.role === 'admin') {
+          setIsAdmin(true);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+        router.push('/login');
+      }
+    };
+
+    fetchUserProfile();
+  }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -48,189 +47,70 @@ const ProfilePage = () => {
     }, 10);
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleAdminOptions = () => {
+    router.push('/AdminPage');
   };
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    try {
-      await createTrainCenter(formData);
-      alert('Training center created successfully');
-      setFormData({ name: '', location: '', capacity: '', contactInfo: '' });
-      fetchTrainCenters(); // Refresh the list
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    try {
-      await updateTrainCenter(selectedCenterId, formData);
-      alert('Training center updated successfully');
-      setFormData({ name: '', location: '', capacity: '', contactInfo: '' });
-      setSelectedCenterId('');
-      fetchTrainCenters(); // Refresh the list
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
-  const handleDelete = async (e) => {
-    e.preventDefault();
-    try {
-      await deleteTrainCenter(selectedCenterId);
-      alert('Training center deleted successfully');
-      setSelectedCenterId('');
-      fetchTrainCenters(); // Refresh the list
-    } catch (error) {
-      alert(error.message);
-    }
-  };
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-blue-50">
-      <h1 className="text-4xl font-semibold text-blue-700 mb-6">Profile</h1>
-      {isAdmin && (
-        <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4">Admin Options</h2>
-
-          <form onSubmit={handleCreate} className="mb-4">
-            <h3 className="text-xl font-semibold mb-2">Create Training Center</h3>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Name"
-              className="w-full p-2 mb-2 border rounded"
-              required
-            />
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="Location"
-              className="w-full p-2 mb-2 border rounded"
-              required
-            />
-            <input
-              type="number"
-              name="capacity"
-              value={formData.capacity}
-              onChange={handleChange}
-              placeholder="Capacity"
-              className="w-full p-2 mb-2 border rounded"
-              required
-            />
-            <input
-              type="text"
-              name="contactInfo"
-              value={formData.contactInfo}
-              onChange={handleChange}
-              placeholder="Contact Info"
-              className="w-full p-2 mb-4 border rounded"
-              required
-            />
+    <div>
+      <header className="bg-blue-700 py-6 px-4 md:px-6">
+        <div className="container flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <span className="relative flex shrink-0 overflow-hidden rounded-full h-12 w-12">
+              <span className="flex h-full w-full items-center justify-center rounded-full bg-blue-200">
+                {user.firstName[0]}{user.lastName[0]}
+              </span>
+            </span>
+            <div className="grid gap-0.5">
+              <h1 className="text-xl font-bold text-white">{user.firstName} {user.lastName}</h1>
+              <p className="text-sm text-blue-100">{user.role}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            {isAdmin && (
+              <button
+                onClick={handleAdminOptions}
+                className="inline-flex h-9 items-center justify-center rounded-md bg-blue-600 px-4 text-sm font-medium text-white shadow transition-colors hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-700"
+              >
+                Admin Options
+              </button>
+            )}
             <button
-              type="submit"
-              className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+              onClick={handleLogout}
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-blue-600 bg-white hover:bg-blue-100 hover:text-blue-700 py-2 h-9 px-4 text-sm"
             >
-              Create
+              Logout
             </button>
-          </form>
-
-          <form onSubmit={handleUpdate} className="mb-4">
-            <h3 className="text-xl font-semibold mb-2">Update Training Center</h3>
-            <select
-              value={selectedCenterId}
-              onChange={(e) => setSelectedCenterId(e.target.value)}
-              className="w-full p-2 mb-2 border rounded"
-              required
-            >
-              <option value="" disabled>Select Training Center</option>
-              {trainCenters.map((center) => (
-                <option key={center._id} value={center._id}>
-                  {center.name}
-                </option>
-              ))}
-            </select>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Name"
-              className="w-full p-2 mb-2 border rounded"
-              required
-            />
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="Location"
-              className="w-full p-2 mb-2 border rounded"
-              required
-            />
-            <input
-              type="number"
-              name="capacity"
-              value={formData.capacity}
-              onChange={handleChange}
-              placeholder="Capacity"
-              className="w-full p-2 mb-2 border rounded"
-              required
-            />
-            <input
-              type="text"
-              name="contactInfo"
-              value={formData.contactInfo}
-              onChange={handleChange}
-              placeholder="Contact Info"
-              className="w-full p-2 mb-4 border rounded"
-              required
-            />
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-            >
-              Update
-            </button>
-          </form>
-
-          <form onSubmit={handleDelete} className="mb-4">
-            <h3 className="text-xl font-semibold mb-2">Delete Training Center</h3>
-            <select
-              value={selectedCenterId}
-              onChange={(e) => setSelectedCenterId(e.target.value)}
-              className="w-full p-2 mb-4 border rounded"
-              required
-            >
-              <option value="" disabled>Select Training Center</option>
-              {trainCenters.map((center) => (
-                <option key={center._id} value={center._id}>
-                  {center.name}
-                </option>
-              ))}
-            </select>
-            <button
-              type="submit"
-              className="w-full bg-red-600 text-white p-2 rounded hover:bg-red-700"
-            >
-              Delete
-            </button>
-          </form>
+          </div>
         </div>
-      )}
-      <button
-        onClick={handleLogout}
-        className="mt-6 bg-red-600 text-white p-3 rounded-lg hover:bg-red-700"
-      >
-        Logout
-      </button>
+      </header>
+      <main className="py-12 px-4 md:px-6 bg-white">
+        <div className="container grid gap-8">
+          <div className="rounded-lg border bg-white text-black shadow-sm" data-v0-t="card">
+            <div className="flex flex-col space-y-1.5 p-6">
+              <h3 className="whitespace-nowrap text-2xl font-semibold leading-none tracking-tight">About</h3>
+            </div>
+            <div className="p-6 grid gap-4">
+              <div className="grid grid-cols-[100px_1fr] items-center gap-4">
+                <div className="font-medium">Name:</div>
+                <div>{user.firstName} {user.lastName}</div>
+              </div>
+              <div className="grid grid-cols-[100px_1fr] items-center gap-4">
+                <div className="font-medium">Email:</div>
+                <div>{user.email}</div>
+              </div>
+              <div className="grid grid-cols-[100px_1fr] items-center gap-4">
+                <div className="font-medium">Role:</div>
+                <div>{user.role}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };

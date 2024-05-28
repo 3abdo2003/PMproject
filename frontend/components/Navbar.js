@@ -1,3 +1,5 @@
+// components/Navbar.js
+
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -26,6 +28,11 @@ const Navbar = () => {
           <Link href="/" legacyBehavior>
             <a className={`text-lg font-semibold ${router.pathname === '/' ? 'text-white' : 'text-blue-200'} hover:text-white`}>
               Home
+            </a>
+          </Link>
+          <Link href="/training-centers" legacyBehavior>
+            <a className={`ml-4 text-lg font-semibold ${router.pathname === '/training-centers' ? 'text-white' : 'text-blue-200'} hover:text-white`}>
+              Training Centers
             </a>
           </Link>
         </div>

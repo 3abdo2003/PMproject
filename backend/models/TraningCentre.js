@@ -1,3 +1,4 @@
+// models/TainingCentre.js
 const mongoose = require('mongoose');
 
 const trainCentreSchema = new mongoose.Schema({

@@ -1,3 +1,4 @@
+// routes/trainRoutes.js
 const express = require('express');
 const TrainCentre = require('../models/TraningCentre');
 const auth = require('../middleware/auth');
