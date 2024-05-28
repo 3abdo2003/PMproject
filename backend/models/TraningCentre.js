@@ -1,4 +1,4 @@
-// models/TainingCentre.js
+// models/TrainingCentre.js
 const mongoose = require('mongoose');
 
 const trainCentreSchema = new mongoose.Schema({
@@ -11,6 +11,10 @@ const trainCentreSchema = new mongoose.Schema({
     required: true,
   },
   capacity: {
+    type: Number,
+    required: true,
+  },
+  availableSeats: {
     type: Number,
     required: true,
   },

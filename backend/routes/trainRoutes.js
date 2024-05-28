@@ -5,14 +5,15 @@ const auth = require('../middleware/auth');
 const router = express.Router();
 
 // Create a new training center
+
 router.post('/', auth, async (req, res) => {
   try {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Only admin can create training centres' });
     }
-    const { name, location, capacity, contactInfo } = req.body;
+    const { name, location, capacity, contactInfo, availableSeats } = req.body;
     const createdBy = req.user.userId;
-    if (!name || !location || !capacity || !contactInfo) {
+    if (!name || !location || !capacity || !contactInfo || availableSeats == null) {
       return res.status(400).json({ message: 'All fields are required' });
     }
     const newTrainCentre = new TrainCentre({
@@ -20,6 +21,7 @@ router.post('/', auth, async (req, res) => {
       location,
       capacity,
       contactInfo,
+      availableSeats,
       createdBy,
     });
     await newTrainCentre.save();
@@ -28,7 +30,6 @@ router.post('/', auth, async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-
 // Get all training centers
 router.get('/', async (req, res) => {
   try {

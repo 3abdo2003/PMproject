@@ -11,6 +11,7 @@ const AdminPage = () => {
     name: '',
     location: '',
     capacity: '',
+    availableSeats: '',
     contactInfo: '',
   });
   const [selectedCenterId, setSelectedCenterId] = useState('');
@@ -47,7 +48,7 @@ const AdminPage = () => {
     try {
       await createTrainCenter(formData);
       alert('Training center created successfully');
-      setFormData({ name: '', location: '', capacity: '', contactInfo: '' });
+      setFormData({ name: '', location: '', capacity: '', availableSeats: '', contactInfo: '' });
       fetchTrainCenters();
     } catch (error) {
       alert(error.message);
@@ -59,7 +60,7 @@ const AdminPage = () => {
     try {
       await updateTrainCenter(selectedCenterId, formData);
       alert('Training center updated successfully');
-      setFormData({ name: '', location: '', capacity: '', contactInfo: '' });
+      setFormData({ name: '', location: '', capacity: '', availableSeats: '', contactInfo: '' });
       setSelectedCenterId('');
       fetchTrainCenters();
     } catch (error) {
@@ -76,6 +77,21 @@ const AdminPage = () => {
       fetchTrainCenters();
     } catch (error) {
       alert(error.message);
+    }
+  };
+
+  const handleSelectCenter = (e) => {
+    const centerId = e.target.value;
+    setSelectedCenterId(centerId);
+    const selectedCenter = trainCenters.find(center => center._id === centerId);
+    if (selectedCenter) {
+      setFormData({
+        name: selectedCenter.name,
+        location: selectedCenter.location,
+        capacity: selectedCenter.capacity,
+        availableSeats: selectedCenter.availableSeats,
+        contactInfo: selectedCenter.contactInfo,
+      });
     }
   };
 
@@ -113,6 +129,15 @@ const AdminPage = () => {
             required
           />
           <input
+            type="number"
+            name="availableSeats"
+            value={formData.availableSeats}
+            onChange={handleChange}
+            placeholder="Available Seats"
+            className="w-full p-2 mb-2 border rounded"
+            required
+          />
+          <input
             type="text"
             name="contactInfo"
             value={formData.contactInfo}
@@ -133,7 +158,7 @@ const AdminPage = () => {
           <h3 className="text-xl font-semibold mb-2">Update Training Center</h3>
           <select
             value={selectedCenterId}
-            onChange={(e) => setSelectedCenterId(e.target.value)}
+            onChange={handleSelectCenter}
             className="w-full p-2 mb-2 border rounded"
             required
           >
@@ -168,6 +193,15 @@ const AdminPage = () => {
             value={formData.capacity}
             onChange={handleChange}
             placeholder="Capacity"
+            className="w-full p-2 mb-2 border rounded"
+            required
+          />
+          <input
+            type="number"
+            name="availableSeats"
+            value={formData.availableSeats}
+            onChange={handleChange}
+            placeholder="Available Seats"
             className="w-full p-2 mb-2 border rounded"
             required
           />

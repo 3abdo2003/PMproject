@@ -1,4 +1,4 @@
-// pages/testingCenters.js
+// pages/trainingCenters.js
 import { useState, useEffect } from 'react';
 import { getAllTrainCenters } from '../services/trainCentre';
 
@@ -47,6 +47,7 @@ const TrainingCenters = () => {
               <div className="space-y-2">
                 <p>{trainCenter.location}</p>
                 <p>Capacity: {trainCenter.capacity}</p>
+                <p>Available Seats: {trainCenter.availableSeats}</p>
                 <p>Contact: {trainCenter.contactInfo}</p>
               </div>
             </div>
