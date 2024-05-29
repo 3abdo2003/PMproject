@@ -117,9 +117,11 @@ export default function HomePage() {
                     </div>
                   </div>
                   <div className="mt-6 flex items-center">
-                    <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-blue-300 bg-blue-500 text-white hover:bg-blue-600 h-10 px-4 py-2">
-                      Book Now
-                    </button>
+                    <Link href="/training-centers" legacyBehavior>
+                      <a className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-blue-300 bg-blue-500 text-white hover:bg-blue-600 h-10 px-4 py-2">
+                        Book Now
+                      </a>
+                    </Link>
                   </div>
                 </div>
               ))}

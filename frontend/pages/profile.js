@@ -3,11 +3,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import Calendar from 'react-calendar'; // Assuming you have this or a similar calendar library installed
+import 'react-calendar/dist/Calendar.css'; // If using 'react-calendar'
+import Spinner from '../components/Spinner'; // Import the Spinner component
 
 const ProfilePage = () => {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [bookings, setBookings] = useState([]);
+  const [markedDates, setMarkedDates] = useState([]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -29,6 +34,15 @@ const ProfilePage = () => {
         if (response.data.user.role === 'admin') {
           setIsAdmin(true);
         }
+
+        // Fetch user bookings
+        const bookingsResponse = await axios.get('http://localhost:5000/api/bookings/my-bookings', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setBookings(bookingsResponse.data.bookings);
+        setMarkedDates(bookingsResponse.data.bookings.map(booking => new Date(booking.date)));
       } catch (error) {
         console.error('Failed to fetch user profile:', error);
         router.push('/login');
@@ -52,13 +66,13 @@ const ProfilePage = () => {
   };
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   return (
-    <div>
-      <header className="bg-blue-700 py-6 px-4 md:px-6">
-        <div className="container flex items-center justify-between">
+    <div className="bg-white py-10 px-4 md:px-6">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <span className="relative flex shrink-0 overflow-hidden rounded-full h-12 w-12">
               <span className="flex h-full w-full items-center justify-center rounded-full bg-blue-200">
@@ -66,35 +80,33 @@ const ProfilePage = () => {
               </span>
             </span>
             <div className="grid gap-0.5">
-              <h1 className="text-xl font-bold text-white">{user.firstName} {user.lastName}</h1>
-              <p className="text-sm text-blue-100">{user.role}</p>
+              <h1 className="text-2xl font-bold">{user.firstName} {user.lastName}</h1>
+              <p className="text-gray-500">{user.email}</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
             {isAdmin && (
               <button
                 onClick={handleAdminOptions}
-                className="inline-flex h-9 items-center justify-center rounded-md bg-blue-600 px-4 text-sm font-medium text-white shadow transition-colors hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-700"
+                className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 Admin Options
               </button>
             )}
             <button
               onClick={handleLogout}
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-blue-600 bg-white hover:bg-blue-100 hover:text-blue-700 py-2 h-9 px-4 text-sm"
+              className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md border border-input bg-background px-4 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               Logout
             </button>
           </div>
         </div>
-      </header>
-      <main className="py-12 px-4 md:px-6 bg-white">
-        <div className="container grid gap-8">
-          <div className="rounded-lg border bg-white text-black shadow-sm" data-v0-t="card">
+        <div className="space-y-6">
+          <div className="rounded-lg border bg-card text-card-foreground shadow-sm" data-v0-t="card">
             <div className="flex flex-col space-y-1.5 p-6">
-              <h3 className="whitespace-nowrap text-2xl font-semibold leading-none tracking-tight">About</h3>
+              <h2 className="text-2xl font-bold text-[#0077b6]">About</h2>
             </div>
-            <div className="p-6 grid gap-4">
+            <div className="p-6 space-y-4">
               <div className="grid grid-cols-[100px_1fr] items-center gap-4">
                 <div className="font-medium">Name:</div>
                 <div>{user.firstName} {user.lastName}</div>
@@ -109,8 +121,38 @@ const ProfilePage = () => {
               </div>
             </div>
           </div>
+          <div className="rounded-lg border bg-card text-card-foreground shadow-sm" data-v0-t="card">
+            <div className="flex flex-col space-y-1.5 p-6">
+              <h2 className="text-2xl font-bold text-[#0077b6]">My Bookings</h2>
+            </div>
+            <div className="p-6 space-y-4">
+              {bookings.map(booking => (
+                booking.trainingCentre ? (
+                  <div key={booking._id} className="grid grid-cols-[1fr_auto] items-center gap-4">
+                    <div>
+                      <h4 className="font-medium">{booking.trainingCentre.name}</h4>
+                      <p className="text-sm text-gray-500">
+                        {new Date(booking.date).toLocaleDateString()} | {booking.time}
+                      </p>
+                      <p className="text-sm text-gray-500">{booking.trainingCentre.location}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div key={booking._id} className="grid grid-cols-[1fr_auto] items-center gap-4">
+                    <div>
+                      <h4 className="font-medium">Unknown Training Centre</h4>
+                      <p className="text-sm text-gray-500">
+                        {new Date(booking.date).toLocaleDateString()} | {booking.time}
+                      </p>
+                      <p className="text-sm text-gray-500">Location not available</p>
+                    </div>
+                  </div>
+                )
+              ))}
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

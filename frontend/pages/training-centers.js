@@ -1,4 +1,3 @@
-// Import necessary libraries
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { getAllTrainCenters } from '../services/trainCentre';
@@ -8,9 +7,9 @@ import { MdLocationOn } from 'react-icons/md';
 const TrainingCenters = () => {
   const [trainCenters, setTrainCenters] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
-  // Fetch train centers on component mount
   useEffect(() => {
     const fetchTrainCenters = async () => {
       try {
@@ -24,15 +23,22 @@ const TrainingCenters = () => {
     fetchTrainCenters();
   }, []);
 
-  // Filter train centers based on search term
+  const handleBookNow = (trainCenterId) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setShowModal(true); // Show the modal if no token
+      return;
+    }
+    router.push(`/book/${trainCenterId}`);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
   const filteredTrainCenters = trainCenters.filter(trainCenter =>
     trainCenter.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Handle book now button click
-  const handleBookNow = (trainCenterId) => {
-    router.push(`/book/${trainCenterId}`);
-  };
 
   return (
     <main className="container mx-auto px-4 py-8 sm:px-6 lg:px-8 bg-white">
@@ -58,7 +64,6 @@ const TrainingCenters = () => {
                 <p>{trainCenter.location}</p>
               </div>
               <div className="flex items-center text-gray-500">
-                {/* Display date and time */}
                 <p>{new Date(trainCenter.date).toLocaleDateString()}, {trainCenter.time}</p>
               </div>
             </div>
@@ -86,6 +91,7 @@ const TrainingCenters = () => {
               <button
                 className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-blue-300 bg-blue-500 text-white hover:bg-blue-600 h-10 px-4 py-2"
                 onClick={() => handleBookNow(trainCenter._id)}
+                disabled={!localStorage.getItem('token')} // Disable if no token
               >
                 Book Now
               </button>
@@ -93,6 +99,29 @@ const TrainingCenters = () => {
           </div>
         ))}
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Login Required</h2>
+            <p className="mb-4">You need to login or register to book a training center.</p>
+            <div className="flex justify-end">
+              <button
+                className="mr-4 inline-flex items-center justify-center rounded-md border border-transparent bg-blue-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                onClick={() => router.push('/login')}
+              >
+                Login
+              </button>
+              <button
+                className="inline-flex items-center justify-center rounded-md border border-transparent bg-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                onClick={closeModal}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

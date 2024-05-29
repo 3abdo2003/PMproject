@@ -14,6 +14,7 @@ const SignUpPage = () => {
     password: '',
     role: '',
   });
+  const [error, setError] = useState(''); // State variable for error message
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -26,11 +27,13 @@ const SignUpPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear any existing error messages
     try {
       await register(userData);
       router.push('/login');
     } catch (error) {
       console.error(error);
+      setError('Registration failed. Please check your details and try again.'); // Set error message
     }
   };
 
@@ -38,6 +41,7 @@ const SignUpPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-blue-50">
       <form className="bg-white p-8 rounded-lg shadow-md w-full max-w-md" onSubmit={handleSubmit}>
         <h2 className="text-2xl font-semibold mb-6 text-blue-700">Sign Up</h2>
+        {error && <div className="mb-6 text-red-500">{error}</div>} {/* Display error message */}
         {Object.keys(userData).map((key) => (
           key !== 'role' && (
             <div key={key} className="mb-6">
