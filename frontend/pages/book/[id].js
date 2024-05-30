@@ -56,7 +56,7 @@ const BookTrainingCentre = () => {
       await createBooking(id, trainCentre.date, trainCentre.time, selectedSeat, token);
       alert('Booking successful!');
       setSelectedSeat('');
-      router.push('/');
+      router.push('/profile');
     } catch (error) {
       alert(error.message);
     }
