@@ -1,7 +1,9 @@
+// pages/book/[id].js
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { createBooking, getBookingsByDateAndTime } from '../../services/booking';
-import { getTrainCentreById } from '../../services/trainCentre';
+import { getTrainCentreById } from '../../services/trainCentre.js';
+import{getBookingsByDateAndTime } from '../../services/booking.js';
+import { addToCart } from '../../services/cart';
 import Spinner from '../../components/Spinner'; // Import the Spinner component
 
 // Custom hook for fetching training center data
@@ -49,14 +51,14 @@ const BookTrainingCentre = () => {
   const { trainCentre, bookedSeats } = useTrainCentre(id);
   const [selectedSeat, setSelectedSeat] = useState('');
 
-  const handleBooking = async (e) => {
+  const handleAddToCart = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
-      await createBooking(id, trainCentre.date, trainCentre.time, selectedSeat, token);
-      alert('Booking successful!');
+      await addToCart(id, trainCentre.date, trainCentre.time, selectedSeat);
+      alert('Item added to cart successfully!');
       setSelectedSeat('');
-      router.push('/profile');
+      router.push('/cart');
     } catch (error) {
       alert(error.message);
     }
@@ -139,10 +141,10 @@ const BookTrainingCentre = () => {
                   </div>
                   <button
                     type="submit"
-                    onClick={handleBooking}
+                    onClick={handleAddToCart}
                     className="inline-flex items-center justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-500 text-white hover:bg-blue-600 rounded-md px-8 w-full h-12"
                   >
-                    Book Now
+                    Add to Cart
                   </button>
                 </div>
               </div>
@@ -209,4 +211,3 @@ const BookTrainingCentre = () => {
 };
 
 export default BookTrainingCentre;
-

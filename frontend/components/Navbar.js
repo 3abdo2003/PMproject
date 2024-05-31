@@ -43,6 +43,16 @@ const Navbar = () => {
             Training Centers
           </a>
         </Link>
+        {isLoggedIn && (
+          <Link href="/cart" legacyBehavior>
+            <a
+              className={`px-2 py-1 rounded-md hover:bg-blue-800 focus:bg-blue-800 ${router.pathname === '/cart' ? 'bg-blue-800' : ''}`}
+              data-active="/cart"
+            >
+              Cart
+            </a>
+          </Link>
+        )}
         <button
           onClick={handleProfileClick}
           className={`px-2 py-1 rounded-md hover:bg-blue-800 focus:bg-blue-800 ${router.pathname === '/profile' ? 'bg-blue-800' : ''}`}

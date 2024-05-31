@@ -1,12 +1,13 @@
-//server.js
+// server.js
 const express = require('express');
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); // Import mongoose
 const cors = require('cors');
 const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/auth');
 const trainCentreRoute = require('./routes/trainRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/train-centre', trainCentreRoute);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/cart', cartRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

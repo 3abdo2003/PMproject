@@ -15,6 +15,7 @@ const AdminPage = () => {
     contactInfo: '',
     date: '',
     time: '',
+    price: '',
   });
   const [selectedCenterId, setSelectedCenterId] = useState('');
 
@@ -59,7 +60,7 @@ const AdminPage = () => {
         alert('Training center created successfully');
       }
 
-      setFormData({ name: '', location: '', capacity: '', availableSeats: '', contactInfo: '', date: '', time: '' });
+      setFormData({ name: '', location: '', capacity: '', availableSeats: '', contactInfo: '', date: '', time: '', price: '' });
       setSelectedCenterId('');
       fetchTrainCenters();
     } catch (error) {
@@ -91,6 +92,7 @@ const AdminPage = () => {
         contactInfo: selectedCenter.contactInfo,
         date: selectedCenter.date || '',
         time: selectedCenter.time || '',
+        price: selectedCenter.price || '',
       });
     }
   };
@@ -105,6 +107,7 @@ const AdminPage = () => {
       contactInfo: '',
       date: '',
       time: '',
+      price: '',
     });
   };
 
@@ -208,7 +211,6 @@ const AdminPage = () => {
                 value={formData.date}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:border-blue-500"
-                placeholder="Enter date"
               />
             </div>
             <div>
@@ -222,60 +224,59 @@ const AdminPage = () => {
                 value={formData.time}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:border-blue-500"
-                placeholder="Enter time"
               />
             </div>
-            <div className="col-span-2 text-right">
-              <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md">
+            <div>
+              <label htmlFor="price" className="block font-medium mb-1">
+                Price
+              </label>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:border-blue-500"
+                placeholder="Enter price"
+                required
+              />
+            </div>
+            <div className="col-span-2 flex justify-between">
+              <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
                 {selectedCenterId ? 'Update' : 'Create'}
               </button>
               {selectedCenterId && (
-                <button
-                  type="button"
-                  onClick={handleCreateNew}
-                  className="ml-2 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md"
-                >
-                  Create New
+                <button onClick={handleDelete} className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">
+                  Delete
                 </button>
               )}
+              <button onClick={handleCreateNew} className="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600">
+                Create New
+              </button>
             </div>
           </form>
         </section>
         <section>
-          <h2 className="text-xl font-bold mb-4">Manage Training Centers</h2>
-          <div className="grid grid-cols-1 gap-4">
-            {trainCenters.map((center) => (
-              <div key={center._id} className="bg-white rounded-md shadow-md p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-lg font-bold">{center.name}</h3>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleSelectCenter(center._id)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-1 px-2 rounded-md"
-                    >
-                      Update
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setSelectedCenterId(center._id);
-                        handleDelete(e);
-                      }}
-                      className="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-2 rounded-md"
-                    >
-                      Delete
-                    </button>
-                  </div>
+          <h2 className="text-xl font-bold mb-4">Training Centers List</h2>
+          <ul className="divide-y divide-gray-200">
+            {trainCenters.map(center => (
+              <li key={center._id} className="py-2 flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold">{center.name}</h3>
+                  <p className="text-gray-600">{center.location}</p>
+                  <p className="text-gray-600">Capacity: {center.capacity}</p>
+                  <p className="text-gray-600">Available Seats: {center.availableSeats}</p>
+                  <p className="text-gray-600">Price: {center.price}</p>
                 </div>
-                <p><strong>Location:</strong> {center.location}</p>
-                <p><strong>Capacity:</strong> {center.capacity}</p>
-                <p><strong>Available Seats:</strong> {center.availableSeats}</p>
-                <p><strong>Contact Info:</strong> {center.contactInfo}</p>
-                <p><strong>Date:</strong> {center.date}</p>
-                <p><strong>Time:</strong> {center.time}</p>
-              </div>
+                <button
+                  onClick={() => handleSelectCenter(center._id)}
+                  className="bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600"
+                >
+                  Edit
+                </button>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       </main>
     </div>

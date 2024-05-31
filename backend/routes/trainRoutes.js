@@ -1,6 +1,5 @@
-// routes/trainRoutes.js
 const express = require('express');
-const TrainCentre = require('../models/TraningCentre');
+const TrainCentre = require('../models/TrainingCentre');
 const auth = require('../middleware/auth');
 const router = express.Router();
 
@@ -10,9 +9,9 @@ router.post('/', auth, async (req, res) => {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Only admin can create training centres' });
     }
-    const { name, location, capacity, contactInfo, availableSeats, date, time } = req.body;
+    const { name, location, capacity, contactInfo, availableSeats, date, time, price } = req.body;
     const createdBy = req.user.userId;
-    if (!name || !location || !capacity || !contactInfo || availableSeats == null) {
+    if (!name || !location || !capacity || !contactInfo || availableSeats == null || !price) {
       return res.status(400).json({ message: 'All fields are required' });
     }
     const newTrainCentre = new TrainCentre({
@@ -24,6 +23,7 @@ router.post('/', auth, async (req, res) => {
       date,
       time,
       createdBy,
+      price,
     });
     await newTrainCentre.save();
     res.status(201).json({ trainCentre: newTrainCentre });
@@ -75,7 +75,7 @@ router.put('/:id', auth, async (req, res) => {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Only admin can update training centres' });
     }
-    const { name, location, capacity, contactInfo, availableSeats, date, time } = req.body;
+    const { name, location, capacity, contactInfo, availableSeats, date, time, price } = req.body;
     const updatedTrainCentre = await TrainCentre.findByIdAndUpdate(req.params.id, {
       name,
       location,
@@ -84,6 +84,7 @@ router.put('/:id', auth, async (req, res) => {
       availableSeats,
       date,
       time,
+      price,
     }, { new: true });
     if (!updatedTrainCentre) {
       return res.status(404).json({ message: 'Training centre not found' });

@@ -1,3 +1,5 @@
+// pages/training-centers.js
+
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { getAllTrainCenters } from '../services/trainCentre';
@@ -8,6 +10,7 @@ const TrainingCenters = () => {
   const [trainCenters, setTrainCenters] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [cartMessage, setCartMessage] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -24,11 +27,6 @@ const TrainingCenters = () => {
   }, []);
 
   const handleBookNow = (trainCenterId) => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setShowModal(true); // Show the modal if no token
-      return;
-    }
     router.push(`/book/${trainCenterId}`);
   };
 
@@ -87,7 +85,7 @@ const TrainingCenters = () => {
                 </div>
               </div>
             </div>
-            <div className="mt-6 flex items-center">
+            <div className="mt-6 flex items-center space-x-4">
               <button
                 className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-blue-300 bg-blue-500 text-white hover:bg-blue-600 h-10 px-4 py-2"
                 onClick={() => handleBookNow(trainCenter._id)}
@@ -95,6 +93,7 @@ const TrainingCenters = () => {
                 Book Now
               </button>
             </div>
+            {cartMessage && <p className="mt-2 text-sm text-green-600">{cartMessage}</p>}
           </div>
         ))}
       </div>
@@ -109,19 +108,19 @@ const TrainingCenters = () => {
               &times;
             </button>
             <h2 className="text-xl font-bold mb-4">Login Required</h2>
-            <p className="mb-4">You need to login or register to book a training center.</p>
-            <div className="flex justify-end">
+            <p className="mb-4">You need to login or register to add items to your cart.</p>
+            <div className="flex justify-end space-x-4">
               <button
-                className="mr-4 inline-flex items-center justify-center rounded-md bg-blue-500 text-white px-4 py-2 text-sm font-medium hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600"
                 onClick={() => router.push('/login')}
               >
                 Login
               </button>
               <button
-                className="inline-flex items-center justify-center rounded-md bg-green-500 text-white px-4 py-2 text-sm font-medium hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                onClick={() => router.push('/signup')}
+                className="bg-gray-300 rounded-md px-4 py-2 hover:bg-gray-400"
+                onClick={closeModal}
               >
-                Register
+                Cancel
               </button>
             </div>
           </div>
