@@ -8,29 +8,52 @@ const router = express.Router();
 // Create a new user
 router.post('/register', async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, nationalID, password } = req.body;
+    const { firstName, lastName, email, phone, country, nationalID, passportNumber, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: 'User already exists' });
+    // Validate required fields
+    if (!firstName || !lastName || !email || !phone || !country || !password) {
+      return res.status(400).json({ message: 'Please provide all required fields' });
+    }
 
+    // Validate nationalID or passportNumber based on country
+    if (country.toUpperCase() === 'EG' && !nationalID) {
+      return res.status(400).json({ message: 'National ID is required for users from Egypt' });
+    }
+    if (country.toUpperCase() !== 'EG' && !passportNumber) {
+      return res.status(400).json({ message: 'Passport number is required for users not from Egypt' });
+    }
+
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({
+    // Create a new user object
+    const newUser = {
       firstName,
       lastName,
       email,
       phone,
-      nationalID,
-      password: hashedPassword, // Save the hashed password
-    });
+      country,
+      password: hashedPassword,
+    };
 
-    await newUser.save();
+    // Conditionally add nationalID or passportNumber
+    if (country.toUpperCase() === 'EG') {
+      newUser.nationalID = nationalID;
+    } else {
+      newUser.passportNumber = passportNumber;
+    }
 
-    res.status(201).json({ user: newUser });
+    // Save the user to the database
+    const user = new User(newUser);
+    await user.save();
+
+    res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Error registering user:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 // Login user
 router.post('/login', async (req, res) => {

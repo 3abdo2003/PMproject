@@ -10,6 +10,9 @@ const Cart = () => {
 
   useEffect(() => {
     const fetchCart = async () => {
+      if(!localStorage.getItem('token')) {
+        router.push('/login')
+      }
       try {
         const data = await viewCart();
         setCart(data.cart);

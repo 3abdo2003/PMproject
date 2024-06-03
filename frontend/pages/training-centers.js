@@ -27,6 +27,10 @@ const TrainingCenters = () => {
   }, []);
 
   const handleBookNow = (trainCenterId) => {
+    if(!localStorage.getItem('token')) {
+      router.push('/login')
+    }
+    else
     router.push(`/book/${trainCenterId}`);
   };
 
