@@ -65,6 +65,10 @@ const ProfilePage = () => {
     router.push('/AdminPage');
   };
 
+  const handleChangePassword = () => {
+    router.push('/forgetpassword');
+  };
+
   if (!user) {
     return <Spinner />;
   }
@@ -93,7 +97,13 @@ const ProfilePage = () => {
                 Admin Options
               </button>
             )}
-            <button
+          <button
+          onClick={handleChangePassword}
+          className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+         >
+          Change Password
+        </button>
+        <button
               onClick={handleLogout}
               className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md border border-input bg-background px-4 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
